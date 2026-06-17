@@ -267,6 +267,7 @@ nav li a.active {
 
 #details .main-text p:first-child {
   margin-top: -5px;
+  padding-bottom: 10px;
 }
 
 #details h2 {
