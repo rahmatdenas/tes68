@@ -21,8 +21,8 @@ WHERE {
     }
   }
   
-  # 2. Daftarkan 4 jenis entitas (masjid, surau, dsb)
-  VALUES ?jenis { wd:Q32815 wd:Q56235676 wd:Q56235673 wd:Q1454820 }
+# 2. Daftarkan jenis entitas secara dinamis
+  VALUES ?jenis { <PLACEHOLDER_JENIS> }
   
   # 3. Cari entitas yang sesuai dengan jenis di atas, secara transitif di bawah provinsi
   ?site wdt:P31 ?jenis ;
