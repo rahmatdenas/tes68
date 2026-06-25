@@ -132,7 +132,7 @@ let wilayahClause1 = '';
     wilayahClause1 = '?provinsi wdt:P31 wd:Q5098 .';
     wilayahClause2 = 'BIND(wd:Q252 AS ?p131Lokasi)';
   } else {
-    wilayahClause1 = `BIND(${provInput} AS ?provinsi)`;
+    wilayahClause1 = `?provinsi wdt:P131 ${provInput}`;
     wilayahClause2 = `BIND(${provInput} AS ?p131Lokasi)`; // <-- Perbaikan di sini
   }
   
