@@ -100,21 +100,28 @@ function doPreProcessing() {
 // === LETAKKAN DI BAGIAN ATAS JS BERSAMA VARIABEL LAIN ===
 var currentKategoriUtama = 'general'; 
 
-// === UBAH FUNGSI DETEKTIF MENJADI SEPERTI INI ===
 function tentukanKategoriKueri(inputTxt) {
-  // Gunakan Regex \b (word boundary) agar hanya persis 'Q5' yang tertangkap
-  if (/\bQ5\b/.test(inputTxt)) return 'tokoh';
+  // 1. Ubah input jadi huruf besar agar kebal dari 'q' kecil
+  let teks = inputTxt.toUpperCase(); 
+
+  if (/\bQ5\b/.test(teks)) return 'tokoh';
   
-  if (inputTxt.includes('Q47461344')) return 'publikasi';
-  if (inputTxt.includes('Q7725634')) return 'fiksi'; 
-  if (inputTxt.includes('Q34770')) return 'bahasa';
-  if (inputTxt.includes('Q19861951')) return 'kuliner'; 
+  if (teks.includes('Q47461344')) return 'publikasi';
+  if (teks.includes('Q7725634')) return 'fiksi'; 
+  if (teks.includes('Q34770')) return 'bahasa';
   
-  if (inputTxt.includes('Q11032') || inputTxt.includes('Q41298')) return 'pers';
+  // === PERUBAHAN DI SINI ===
+  // Kelompokkan semua yang memakai P2341 (Kuliner, Lukisan, Lontar)
+  const kelompokAsal = ['Q19861951', 'Q93184', 'Q1641020'];
+  let isMemakaiAsal = kelompokAsal.some(qid => teks.includes(qid));
+  if (isMemakaiAsal) return 'kuliner'; 
+  // =========================
+  
+  if (teks.includes('Q11032') || teks.includes('Q41298')) return 'pers';
   
   // Daftar Q-ID Entitas Alam & Peristiwa
   const kelompokAlam = ['Q179049', 'Q8502', 'Q35509', 'Q23442', 'Q34038', 'Q23397', 'Q204324', 'Q159954', 'Q7944'];
-  let isAlam = kelompokAlam.some(qid => inputTxt.includes(qid));
+  let isAlam = kelompokAlam.some(qid => teks.includes(qid));
   if (isAlam) return 'alam';
   
   // Wilayah Administratif otomatis akan bermuara di sini
@@ -747,7 +754,16 @@ let teksJudul = 'Informasi';
   } else if (currentKategoriUtama === 'bahasa') {
     teksJudul = 'Informasi Bahasa';
   } else if (currentKategoriUtama === 'kuliner') {
-    teksJudul = 'Informasi Kuliner';
+// === TAMBAHKAN PENGECEKAN INI AGAR JUDULNYA PAS ===
+    let inputAsli = document.getElementById('jenis-input').value;
+    if (inputAsli.includes('Q93184')) {
+      teksJudul = 'Informasi Lukisan';
+    } else if (inputAsli.includes('Q1641020')) {
+      teksJudul = 'Informasi Lontar';
+    } else {
+      teksJudul = 'Informasi Kuliner';
+    }
+    // =================================================
   } else {
     let isBersejarah = false;
     if (record.rawTahunBerdiri) {
