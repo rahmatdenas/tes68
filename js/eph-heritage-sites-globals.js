@@ -168,16 +168,17 @@ function getSparqlQuery5(qid) {
 }
 
 function getSparqlQuery6(qid) {
-  return `SELECT ?siteQid ?kapasitas ?commonsCat ?kondisiLabel WHERE {
+  return `SELECT ?siteQid ?kapasitas ?kondisiLabel WHERE {
     VALUES ?site { wd:${qid} }
-    OPTIONAL { ?site wdt:P373 ?commonsCat . }
+    
+    # Kapasitas (P1083)
     OPTIONAL { ?site wdt:P1083 ?kapasitas . }
-    OPTIONAL { 
-      ?site wdt:P5817 ?kondisiNode . 
-      ?kondisiNode rdfs:label ?kondisiLabel .
-      FILTER(LANG(?kondisiLabel) = "id")
-    }
+    
+    # Status Keadaan (P5816)
+    OPTIONAL { ?site wdt:P5816 ?kondisi . }
+    
     BIND (SUBSTR(STR(?site), 32) AS ?siteQid) .
+    SERVICE wikibase:label { bd:serviceParam wikibase:language "id". }
   } LIMIT 1`;
 }
 
