@@ -161,7 +161,7 @@ function populateProvinceTypesData() {
       'fiksi': 'P840',
       'tokoh': 'P19',
       'bahasa': 'P2341',
-      'lokasi': 'P276'
+      'kuliner': 'P276'
     };
     
     // Ambil P-ID sesuai namaKueri. Jika tidak ada di kamus, otomatis pakai default 'P131'
