@@ -102,59 +102,99 @@ var currentNamaWilayah = 'Semua Wilayah'; // Penampung nama daerah
 function tentukanKategoriKueri(inputTxt) {
   let teks = inputTxt.toUpperCase(); 
 
+  // Publikasi & Fiksi
+  if (teks.includes('Q47461344') && teks.includes('Q7725634')) return 'publikasi';
+  if (teks.includes('Q7725634') && !teks.includes('Q47461344')) return 'fiksi'; 
+  
   if (/\bQ5\b/.test(teks)) return 'tokoh';
-  
-  if (teks.includes('Q47461344')) return 'publikasi';
-  if (teks.includes('Q7725634')) return 'fiksi'; 
-  if (teks.includes('Q34770')) return 'bahasa';
-  
-  // Kelompokkan semua yang memakai P2341/P276 (Kuliner, Lukisan, Lontar)
-  const kelompokAsal = ['Q19861951', 'Q3305213', 'Q1641020', 'Q87167', 'Q133492', 'Q11460', 'Q107357104', 'Q189819', 'Q36192', 'Q7944'];
-  let isMemakaiAsal = kelompokAsal.some(qid => teks.includes(qid));
-  if (isMemakaiAsal) return 'kuliner'; 
-  
   if (teks.includes('Q11032') || teks.includes('Q41298')) return 'pers';
+  if (/\bQ7944\b/.test(teks)) return 'peristiwa'; // Gempa bumi
   
-  // Daftar Q-ID Entitas Alam & Peristiwa
-  const kelompokAlam = ['Q179049', 'Q8502', 'Q35509', 'Q23442', 'Q34038', 'Q23397', 'Q204324', 'Q159954', 'Q7944'];
-  let isAlam = kelompokAlam.some(qid => teks.includes(qid));
+  // Kategori Alam (Semua ini akan mematikan fitur "Didirikan")
+  const kelompokAlam = [
+    'Q34770', // Bahasa
+    'Q19861951', 'Q746549', 'Q2095', 'Q8195619', // Hidangan
+    'Q11460', 'Q3172759', 'Q28823', // Pakaian
+    'Q107357104', 'Q184485', // Tari & Pertunjukan
+    'Q189819', 'Q2627975', // Ritual & Upacara
+    'Q36192', // Budaya rakyat
+    'Q22746', 'Q174782', // RTH
+    'Q43501', 'Q167346', // Kebun binatang & tanaman
+    'Q179049', // Cagar alam
+    'Q8502', // Gunung
+    'Q35509', // Gua
+    'Q23442', // Pulau
+    'Q34038', // Air terjun
+    'Q23397', 'Q204324', 'Q159954', // Danau & kaldera
+    'Q193475', 'Q40080', 'Q570116', // Pantai & Objek Wisata
+    'Q131681', 'Q12323' // Waduk, bendungan, embung
+  ];
+  // Regex \b digunakan agar Q8502 tidak terpanggil di dalam teks Q850299 dll
+  let isAlam = kelompokAlam.some(qid => new RegExp(`\\b${qid}\\b`).test(teks));
   if (isAlam) return 'alam';
   
-  // Wilayah Administratif otomatis akan bermuara di sini
   return 'general';
 }
 
-// Fungsi baru untuk menentukan nama klaster dari Q-ID
 function dapatkanNamaKlaster(inputTxt) {
   let teks = inputTxt.toUpperCase();
+  const cek = (qids) => qids.some(qid => new RegExp(`\\b${qid}\\b`).test(teks));
   
-  // Daftarkan kelompok klastermu di sini
-  const kelompokMasjid = ['Q32815', 'Q56235676', 'Q56235673', 'Q1454820'];
-  if (kelompokMasjid.some(qid => teks.includes(qid))) return 'Masjid';
+  // Pengecualian Khusus
+  if (cek(['Q3199141', 'Q3191695'])) return 'Wilayah Administratif';
+  if (cek(['Q5'])) return 'Tokoh';
+  if (cek(['Q47461344']) && cek(['Q7725634'])) return 'Publikasi'; // Sepaket
+  if (cek(['Q7725634']) && !cek(['Q47461344'])) return 'Latar karya sastra';
+  if (cek(['Q3305213'])) return 'Lukisan';
+  if (cek(['Q1641020'])) return 'Lontar';
+  if (cek(['Q87167'])) return 'Naskah';
+  if (cek(['Q11032', 'Q41298'])) return 'Media massa';
+  if (cek(['Q7944'])) return 'Gempa bumi';
 
-  const kelompokGereja = ['Q16970', 'Q2977', 'Q56242215'];
-  if (kelompokGereja.some(qid => teks.includes(qid))) return 'Gereja';
+  // Kategori Alam / Kebudayaan Non-Bangunan
+  if (cek(['Q34770'])) return 'Bahasa';
+  if (cek(['Q19861951', 'Q746549', 'Q2095', 'Q8195619'])) return 'Hidangan';
+  if (cek(['Q11460', 'Q3172759', 'Q28823'])) return 'Pakaian';
+  if (cek(['Q107357104', 'Q184485'])) return 'Tari dan pertunjukan';
+  if (cek(['Q189819', 'Q2627975'])) return 'Ritual dan upacara';
+  if (cek(['Q36192'])) return 'Budaya rakyat';
+  if (cek(['Q22746', 'Q174782'])) return 'Ruang terbuka hijau';
+  if (cek(['Q43501', 'Q167346'])) return 'Kebun binatang & tanaman';
+  if (cek(['Q179049'])) return 'Cagar alam';
+  if (cek(['Q8502'])) return 'Gunung';
+  if (cek(['Q35509'])) return 'Gua';
+  if (cek(['Q23442'])) return 'Pulau';
+  if (cek(['Q34038'])) return 'Air terjun';
+  if (cek(['Q23397', 'Q204324', 'Q159954'])) return 'Danau & kaldera';
+  if (cek(['Q40080', 'Q193475'])) return 'Pantai'; // Q193475 sering beririsan
+  if (cek(['Q570116'])) return 'Objek wisata';
+  if (cek(['Q131681', 'Q12323'])) return 'Waduk, bendungan, & embung';
 
-  if (teks.includes('Q15104430')) return 'Cagar Alam';
+  // Klaster Bangunan & Fasilitas (Non-Alam Default)
+  if (cek(['Q32815', 'Q56235676', 'Q56235673', 'Q1454820'])) return 'Masjid';
+  if (cek(['Q137894610', 'Q35112127', 'Q4246737', 'Q19860854', 'Q109607'])) return 'Bangunan bersejarah';
+  if (cek(['Q16970', 'Q2977', 'Q56242215'])) return 'Gereja & katedral';
+  if (cek(['Q5393308', 'Q2680845'])) return 'Vihara & kelenteng';
+  if (cek(['Q16917'])) return 'Rumah sakit';
+  if (cek(['Q3918', 'Q38723'])) return 'Universitas & kampus';
+  if (cek(['Q7075'])) return 'Perpustakaan';
+  if (cek(['Q33506'])) return 'Museum';
+  if (cek(['Q16560', 'Q481289'])) return 'Istana';
+  if (cek(['Q1248784'])) return 'Bandar udara';
+  if (cek(['Q55488'])) return 'Stasiun kereta api';
+  if (cek(['Q44782'])) return 'Pelabuhan';
+  if (cek(['Q494829'])) return 'Terminal bus';
+  if (cek(['Q483110', 'Q2310214'])) return 'Stadion & lapangan olahraga';
+  if (cek(['Q44539', 'Q2736554', 'Q842402', 'Q3124902'])) return 'Kuil & candi';
+  if (cek(['Q57821', 'Q1785071', 'Q91122'])) return 'Benteng dan bunker';
+  if (cek(['Q330284', 'Q11315'])) return 'Pasar dan mall';
+  if (cek(['Q27686', 'Q875157'])) return 'Hotel dan resor';
+  if (cek(['Q4989906', 'Q321053', 'Q11734477', 'Q179700', 'Q170980', 'Q5003624'])) return 'Monumen, patung, & memorial';
+  if (cek(['Q178743', 'Q860861'])) return 'Prasasti dan arca';
+  if (cek(['Q101659'])) return 'Menhir & dolmen';
+  if (cek(['Q839954'])) return 'Situs arkeologi';
+  if (cek(['Q220659'])) return 'Artefak';
 
-  const kelompokBangunan = ['Q137894610', 'Q35112127', 'Q4246737', 'Q19860854', 'Q109607']; // <-- Awalan Q sudah ditambahkan
-  if (kelompokBangunan.some(qid => teks.includes(qid))) return 'Bangunan';
-
-  if (teks.includes('Q55488')) return 'Stasiun';
-  if (teks.includes('Q44782')) return 'Pelabuhan';
-  if (teks.includes('Q23442')) return 'Pulau';
-  if (/\bQ5\b/.test(teks)) return 'Tokoh';
-  if (teks.includes('Q34770')) return 'Bahasa';
-  if (teks.includes('Q11032') || teks.includes('Q41298')) return 'Media Massa';
-  if (teks.includes('Q7725634')) return 'Karya Fiksi';
-  if (teks.includes('Q3305213')) return 'Lukisan';
-  if (teks.includes('Q1641020')) return 'Lontar';
-  
-  const kelompokKuliner = ['Q19861951', 'Q3305213', 'Q87167', 'Q11460', 'Q107357104', 'Q189819', 'Q36192', 'Q7944'];
-  if (kelompokKuliner.some(qid => teks.includes(qid))) return 'Kuliner';
-  const kelompokWilayah = ['Q3199141', 'Q3191695'];
-  if (kelompokWilayah.some(qid => teks.includes(qid))) return 'Wilayah Administratif';
-  // Jika tidak masuk daftar di atas, beri nama default
   return 'Objek'; 
 }
 
@@ -819,14 +859,20 @@ let wikiUrlUtama = `https://www.wikidata.org/wiki/${qid}`;
   // ==========================================
   // PERBAIKAN 3: RENDER HEADER KLUSTER DINAMIS
   // ==========================================
-  let isBersejarah = false;
+let isBersejarah = false;
   if (record.rawTahunBerdiri) {
     let tahunBangunan = parseInt(record.rawTahunBerdiri.substring(0, 4));
     if (tahunBangunan <= (new Date().getFullYear() - 50)) isBersejarah = true;
   }
 
-  // Daftarkan klaster yang masuk akal diberi gelar "Bersejarah"
-  let klasterBisaBersejarah = ['Masjid', 'Gereja', 'Bangunan', 'Stasiun', 'Pelabuhan']; 
+  // Daftar bangunan/struktur fisik yang masuk akal diberi label "Bersejarah"
+  let klasterBisaBersejarah = [
+    'Masjid', 'Bangunan bersejarah', 'Gereja & katedral', 'Vihara & kelenteng',
+    'Rumah sakit', 'Universitas & kampus', 'Perpustakaan', 'Museum', 'Istana',
+    'Stasiun kereta api', 'Pelabuhan', 'Kuil & candi', 'Benteng dan bunker',
+    'Pasar dan mall', 'Hotel dan resor', 'Monumen, patung, & memorial', 
+    'Situs arkeologi'
+  ]; 
   
   let teksJudul = `Informasi ${currentNamaKlaster}`;
   if (klasterBisaBersejarah.includes(currentNamaKlaster) && isBersejarah) {
@@ -836,7 +882,7 @@ let wikiUrlUtama = `https://www.wikidata.org/wiki/${qid}`;
   let designationsHtml = `<h2 style="margin-top:10px">${teksJudul} ${tautanSuntingRingkasan}</h2>`;
   designationsHtml += '<ul class="designations">';
 
-  // Siapkan daftar provinsi
+  // Siapkan daftar provinsi & Lokasi
   let arrayProvinsi = Object.values(record.designations).filter(p => p !== 'Tidak dalam Provinsi');
   if (arrayProvinsi.length === 0) arrayProvinsi.push('Indonesia');
   let teksDaftarProvinsi = arrayProvinsi.join(', '); 
@@ -850,42 +896,50 @@ let wikiUrlUtama = `https://www.wikidata.org/wiki/${qid}`;
   }
 
   // ==========================================
-  // PERBAIKAN 4 & 5: LOGIKA 'TERLETAK' & 'DIDIRIKAN'
+  // LOGIKA 'TERLETAK' (T) & 'DIDIRIKAN' (D)
   // ==========================================
   let prefixLokasi = 'Terletak di'; 
   let showTahun = true; 
   let prefixTahun = 'Didirikan';
 
-  // 1. Tentukan Prefix Lokasi & Matikan Tahun untuk Alam/Non-Alam
-  if (['Bahasa'].includes(currentNamaKlaster)) { 
-    prefixLokasi = 'Wilayah penutur utama'; 
-    showTahun = false; 
+  // 1. Pengecualian Khusus (Overrides)
+  if (['Wilayah Administratif'].includes(currentNamaKlaster)) {
+    prefixLokasi = 'Provinsi';
+    prefixTahun = 'Hari jadi';
+  } else if (['Tokoh'].includes(currentNamaKlaster)) {
+    prefixLokasi = 'Tempat lahir';
+    prefixTahun = 'Tanggal lahir';
+  } else if (['Latar karya sastra'].includes(currentNamaKlaster)) {
+    prefixLokasi = 'Latar';
+    prefixTahun = 'Terbit perdana';
+  } else if (['Publikasi', 'Media massa'].includes(currentNamaKlaster)) {
+    prefixLokasi = 'Tempat terbit';
+    prefixTahun = 'Terbit perdana';
+  } else if (['Lukisan'].includes(currentNamaKlaster)) {
+    prefixLokasi = 'Koleksi';
+    prefixTahun = 'Dilukis';
+  } else if (['Lontar', 'Naskah'].includes(currentNamaKlaster)) {
+    prefixLokasi = 'Koleksi';
+    prefixTahun = 'Disalin';
+  } else if (['Gempa bumi'].includes(currentNamaKlaster)) {
+    prefixLokasi = 'Tempat kejadian/terdampak';
+    prefixTahun = 'Pada';
   }
-  else if (['Kuliner', 'Lukisan', 'Lontar'].includes(currentNamaKlaster)) { 
-    prefixLokasi = 'Asal'; 
-    showTahun = false; 
-  }
-  else if (currentKategoriUtama === 'alam') {
 
-    prefixLokasi = `${currentNamaKlaster} khas`;
-    showTahun = false; 
+  // 2. Kategori Alam (Mematikan Tahun & Modifikasi Terletak)
+  if (currentKategoriUtama === 'alam') {
+    showTahun = false;
+    
+    if (['Bahasa'].includes(currentNamaKlaster)) {
+      prefixLokasi = 'Wilayah penutur utama';
+    } else if (['Hidangan', 'Pakaian', 'Tari dan pertunjukan', 'Ritual dan upacara', 'Budaya rakyat'].includes(currentNamaKlaster)) {
+      prefixLokasi = `${currentNamaKlaster} khas`;
+    } else {
+      // Untuk sisanya seperti RTH, Kebun Binatang, Gunung, Air Terjun, dll.
+      // Tetap menggunakan default prefixLokasi = 'Terletak di'
+      prefixLokasi = 'Terletak di';
+    }
   }
-  else if (['Wilayah Administratif'].includes(currentNamaKlaster)) { 
-    prefixLokasi = 'Provinsi'; 
-  }
-  else if (['Karya Fiksi'].includes(currentNamaKlaster)) { prefixLokasi = 'Latar'; }
-  else if (['Surat Kabar', 'Publikasi'].includes(currentNamaKlaster)) { prefixLokasi = 'Tempat terbit'; }
-  else if (['Kantor', 'Perusahaan'].includes(currentNamaKlaster)) { prefixLokasi = 'Kantor'; }
-  else if (['Tokoh'].includes(currentNamaKlaster)) { prefixLokasi = 'Tempat lahir'; }
-  else if (['Peristiwa', 'Perang'].includes(currentNamaKlaster)) { prefixLokasi = 'Tempat kejadian'; }
-
-  // 2. Tentukan Prefix Tahun berdasarkan Prefix Lokasi (Hanya dieksekusi jika showTahun === true)
-  if (prefixLokasi === 'Tempat terbit') prefixTahun = 'Terbit perdana';
-  else if (prefixLokasi === 'Provinsi') prefixTahun = 'Hari jadi';
-  else if (prefixLokasi === 'Latar') prefixTahun = 'Terbit';
-  else if (prefixLokasi === 'Kantor') prefixTahun = 'Sejak';
-  else if (prefixLokasi === 'Tempat lahir') prefixTahun = 'Lahir';
-  else if (prefixLokasi === 'Tempat kejadian') prefixTahun = 'Waktu/periode';
 
   // 3. Render HTML Lokasi
   let infoLokasiHtml = '';
@@ -898,7 +952,7 @@ let wikiUrlUtama = `https://www.wikidata.org/wiki/${qid}`;
       `<p>Koordinat: <span style="font-style: italic; color: #888;">Data belum tersedia</span></p>`;
   }
 
-  // 4. Render HTML Tahun (Hanya dicetak jika bukan klaster tanpa-tahun/alam)
+  // 4. Render HTML Tahun (Hanya dicetak jika showTahun === true)
   let infoTahunHtml = '';
   if (showTahun) {
     if (record.tahunBerdiri) {
