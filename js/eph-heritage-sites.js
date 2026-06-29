@@ -654,7 +654,7 @@ if (urlWikibooks) {
       let wikibooksHtml = `
         <div style="margin-top:0px;">
           <h2 style="margin-bottom:0px;">Resep & Panduan</h2>
-          <p class="wikipedia-link" style="padding: 5px 0;">
+          <p class="wikipedia-link" style="padding-top: 5px;">
             <a href="${urlWikibooks}" target="_blank">
               <img src="img/wikibook_tiny_logo.png" alt="" />
               <span>Lihat di Wikibuku</span>
@@ -1026,7 +1026,7 @@ let isBersejarah = false;
     teksJudul = `Informasi ${currentNamaKlaster} Bersejarah`;
   }
 
-  let designationsHtml = `<h2 style="margin-top:10px">${teksJudul} ${tautanSuntingRingkasan}</h2>`;
+  let designationsHtml = `<h2 style="margin-top:0px">${teksJudul} ${tautanSuntingRingkasan}</h2>`;
   designationsHtml += '<ul class="designations">';
 
   // Siapkan daftar provinsi & Lokasi
@@ -1232,7 +1232,7 @@ function renderHistoricalImagesInPanel(qid) {
   }
 
   if (record.commonsCat) {
-    html += '<h2 style="margin-bottom:10px;">Galeri lainnya</h2>';
+    html += '<h2 style="margin-bottom:0px;">Galeri lainnya</h2>';
     html += 
       '<p class="wikipedia-link" style="margin-bottom: 0;">' +
         `<a href="https://commons.wikimedia.org/wiki/Category:${encodeURIComponent(record.commonsCat)}" target="_blank">` +
@@ -1248,7 +1248,7 @@ function renderHistoricalImagesInPanel(qid) {
     
     let judulGaleriUtama = '';
     if (record.pastImage || record.interiorImage || (record.vicinityImages && record.vicinityImages.length > 0)) {
-      judulGaleriUtama = `<h2 style="margin-bottom:15px;">Galeri ${tautanSuntingGaleri}</h2>`;
+      judulGaleriUtama = `<h2 style="margin-bottom:0px;">Galeri ${tautanSuntingGaleri}</h2>`;
     }
     
     container.innerHTML = judulGaleriUtama + html;
