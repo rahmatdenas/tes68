@@ -563,7 +563,7 @@ const labelKamus = {
     agamaList: 'Agama', bagianDari: 'Bagian dari',
   pencipta: 'Pencipta',
     panjang: 'Panjang',
-    tinggi: 'Tinggi',
+    tinggi: 'Tinggi', lebar: 'Lebar',
     aksaraList: 'Sistem penulisan'
   };
 
@@ -613,7 +613,7 @@ else if (key === 'kepalaDaerah') {
       else if (key === 'kapasitas' || key === 'korban') {
         formattedValue = parseInt(rawValue).toLocaleString('id-ID');
       }
-        else if (key === 'panjang' || key === 'tinggi') {
+else if (key === 'panjang' || key === 'tinggi' || key === 'lebar') { 
         let [angka, satuan] = rawValue.split('|');
         let angkaRapi = parseFloat(angka).toLocaleString('id-ID');
         formattedValue = satuan ? `${angkaRapi} ${satuan}` : angkaRapi;
