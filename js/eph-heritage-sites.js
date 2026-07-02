@@ -880,7 +880,7 @@ function updateFeatureCounts(totalValidRecords) {
   let searchInput = document.getElementById('search-input');
   if (searchInput) {
     // === PERUBAHAN PLACEHOLDER SESUAI KLASTER ===
-searchInput.placeholder = `Menampilkan ${totalValidRecords} hasil ${currentNamaKlaster.toLowerCase()} (atau ketik yang ingin dicari)`;
+searchInput.placeholder = `Menampilkan ${totalValidRecords} hasil (atau ketik yang ingin dicari)`;
   }
 }
 
