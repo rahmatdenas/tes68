@@ -71,7 +71,7 @@ function loadPrimaryData() {
     // ==========================================
     // PERBAIKAN DI BLOK CATCH INI
     // ==========================================
-    .catch(error => {
+.catch(error => {
        if (error === 'ABORTED') {
          console.log("Pencarian dibatalkan secara paksa. Kembali ke Beranda.");
          return;
@@ -83,7 +83,7 @@ function loadPrimaryData() {
 
        // 2. Tampilkan pesan error di panel daftar (menggantikan alert bawaan browser)
        let indexList = document.getElementById('index-list');
-       if (indexList) {
+       if (indexList) {         
          indexList.innerHTML = `
            <div style="padding: 40px 20px; text-align: center; line-height: 1.6;">
              <h3 style="margin-bottom: 10px; margin-top:0; color: #cc0000;">Koneksi Terputus</h3>
@@ -236,6 +236,11 @@ function populateProvinceTypesData() {
   currentKategoriUtama = tentukanKategoriKueri(inputTxt);
   currentNamaKlaster = dapatkanNamaKlaster(inputTxt); 
   currentNamaWilayah = provDropdown.options[provDropdown.selectedIndex].text;
+
+let brandingDesc = document.getElementById('branding-desc');
+  if (brandingDesc) {
+    brandingDesc.textContent = `${currentNamaKlaster} di ${currentNamaWilayah}`;
+  }
   
   // 2. RENDER LOADING LANGSUNG DI SINI SECARA UTUH
   let indexList = document.getElementById('index-list');
@@ -259,7 +264,7 @@ function populateProvinceTypesData() {
 let hierarkiLokasi = '?l wdt:P131* ?p .'; 
     let kurungBuka = '';
   let kurungTutup = '';
-  const klasterKhususNasional = ['Gempa bumi dan tsunami', 'Peristiwa lainnya', 'Publikasi', 'Lukisan'];
+  const klasterKhususNasional = ['Wilayah Administratif', 'Gempa bumi dan tsunami', 'Peristiwa lainnya', 'Publikasi', 'Lukisan'];
   let isKhususNasional = klasterKhususNasional.includes(currentNamaKlaster);
 let filterNasional = '?s wdt:P17 wd:Q252 .';
 if (currentNamaKlaster === 'Publikasi') {
@@ -268,7 +273,9 @@ if (currentNamaKlaster === 'Publikasi') {
 // ...
 if (provInput === 'all') {
   wilayahClause1 = '?p wdt:P31 wd:Q5098 .';
-// ...
+  if (isKhususNasional) {
+    baseQuery = KUMPULAN_KUERI_0['khusus_negara_all'];
+  }
 } else {
     wilayahClause1 = `?p wdt:P131 ${provInput}.`;
     let wilayahClause2 = `BIND(${provInput} AS ?p) BIND(${provInput} AS ?l)`; 
