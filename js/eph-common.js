@@ -411,11 +411,20 @@ function processHashChange() {
     // HASIL atau DETAIL BUTIR
     let isIndexPage = (fragment === 'hasil');
 
+    // KONDISI 1: DATA BELUM DITARIK (ATAU SEDANG DITARIK)
     if (!PrimaryDataIsLoaded) {
       if (fragment !== '') {
         // Jika sembarang ketik URL atau menekan tab Hasil sebelum data ditarik
         if (!isIndexPage) window.location.hash = 'hasil'; // Paksa arahkan ke #hasil
-document.title = `${currentNamaKlaster} di ${currentNamaWilayah} – ${BASE_TITLE}`;
+        
+        // --- KUNCI PERBAIKAN 1 ---
+        // Jika sedang loading, beri tahu di tab browser. Jika murni kosong, tulis "Data Belum Ditarik"
+        if (isFetching) {
+          document.title = `Memuat ${currentNamaKlaster}... – ${BASE_TITLE}`;
+        } else {
+          document.title = 'Data Belum Ditarik – ' + BASE_TITLE;
+        }
+
         displayPanelContent('index');
 
         let indexList = document.getElementById('index-list');          
@@ -433,15 +442,19 @@ document.title = `${currentNamaKlaster} di ${currentNamaWilayah} – ${BASE_TITL
         }
       }
     } 
+    // KONDISI 2: DATA SUDAH DITARIK NORMAL
     else {
-      // Skenario Normal: Data sudah ditarik
       if (isIndexPage || !(fragment in Records)) {
         if (!isIndexPage) window.location.hash = 'hasil';  
-        document.title = 'Hasil – ' + BASE_TITLE;
+        
+        // --- KUNCI PERBAIKAN 2 ---
+        // Tampilkan Nama Klaster dan Wilayah saat pengguna membuka tab Hasil
+        document.title = `${currentNamaKlaster} di ${currentNamaWilayah} – ${BASE_TITLE}`;
+        
         displayPanelContent('index');
       }
       else {
-        // Buka Detail Butir (Nav akan berubah jadi << Hasil >>)
+        // Buka Detail Butir (Judul otomatis mengikuti nama bangunan/situs karena fungsi displayRecordDetails)
         activateMapMarker(fragment);
         displayRecordDetails(fragment);
       }
